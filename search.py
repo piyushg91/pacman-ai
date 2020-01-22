@@ -17,6 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
+import heapq
 from game import Directions
 from position_search_problem import PositionSearchProblem
 from queue import Queue
@@ -72,7 +73,7 @@ def get_path_from_start_to_goal(parent_map, goal):
     directions = []
     back_track_current = goal
     while back_track_current in parent_map:
-        next_back_track_current, d  = parent_map[back_track_current]
+        next_back_track_current, d, _ = parent_map[back_track_current]
         directions.append(d)
         back_track_current = next_back_track_current
     directions.reverse()
@@ -101,10 +102,35 @@ def breadthFirstSearch(problem: PositionSearchProblem):
             q.put(coordinate)
     raise Exception('Could not find path')
 
-def uniformCostSearch(problem):
+
+def uniformCostSearch(problem: PositionSearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    raise NotImplementedError
+    parent_map, explored, start = {}, set(), problem.startState
+    priority_queue = [(0, start)]
+    while priority_queue:
+        frontier_cost, min_frontier = heapq.heappop(priority_queue)
+        if min_frontier in explored:
+            continue
+        explored.add(min_frontier)
+        if problem.isGoalState(min_frontier):
+            directions = get_path_from_start_to_goal(parent_map, min_frontier)
+            return directions
+        for neighbor in problem.getSuccessors(min_frontier):
+            coordinate, direction, cost = neighbor
+            total_cost = frontier_cost + cost
+            if coordinate not in explored:
+                # Only update the parent_map if cost is less
+                node_info = (min_frontier, direction, total_cost)
+                heapq.heappush(priority_queue, (total_cost, coordinate))
+                if coordinate not in parent_map:
+                    parent_map[coordinate] = node_info
+                else:
+                    existing_total_cost = parent_map[coordinate][2]
+                    if total_cost < existing_total_cost:
+                        parent_map[coordinate] = node_info
+    raise Exception('Could not find path')
+
 
 def nullHeuristic(state, problem=None):
     """
