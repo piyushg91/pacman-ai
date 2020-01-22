@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 from game import Directions
 from position_search_problem import PositionSearchProblem
+from queue import Queue
 
 
 
@@ -56,13 +57,7 @@ def depthFirstSearch(problem: PositionSearchProblem):
             continue
         visited.add(current)
         if problem.isGoalState(current):
-            directions = []
-            back_track_current = current
-            while back_track_current in parent_map:
-                next_back_track_current, d  = parent_map[back_track_current]
-                directions.append(d)
-                back_track_current = next_back_track_current
-            directions.reverse()
+            directions = get_path_from_start_to_goal(parent_map, problem.goal)
             return directions
         for neighbor in problem.getSuccessors(current):
             coordinate, direction, cost = neighbor
@@ -73,11 +68,38 @@ def depthFirstSearch(problem: PositionSearchProblem):
             continue
     raise Exception('Could not find path')
 
+def get_path_from_start_to_goal(parent_map, goal):
+    directions = []
+    back_track_current = goal
+    while back_track_current in parent_map:
+        next_back_track_current, d  = parent_map[back_track_current]
+        directions.append(d)
+        back_track_current = next_back_track_current
+    directions.reverse()
+    print('Length of direction ' + str(len(directions)))
+    return directions
 
-def breadthFirstSearch(problem):
+
+def breadthFirstSearch(problem: PositionSearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    raise NotImplementedError
+    q = Queue()
+    start = problem.getStartState()
+    parent_map, visited = {}, set()
+    q.put(start)
+    while q:
+        next_node = q.get()
+        visited.add(next_node)
+        if problem.isGoalState(next_node):
+            directions = get_path_from_start_to_goal(parent_map, next_node)
+            return directions
+        for neighbor in problem.getSuccessors(next_node):
+            coordinate, direction, _ = neighbor
+            if coordinate in visited:
+                continue
+            parent_map[coordinate] = (next_node, direction)
+            q.put(coordinate)
+    raise Exception('Could not find path')
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
