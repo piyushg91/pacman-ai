@@ -46,7 +46,33 @@ def depthFirstSearch(problem: PositionSearchProblem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    raise NotImplementedError
+    start = problem.getStartState()
+    visited = set()
+    stack = [start]
+    parent_map = {}
+    while stack:
+        current = stack.pop()
+        if current in visited:
+            continue
+        visited.add(current)
+        if problem.isGoalState(current):
+            directions = []
+            back_track_current = current
+            while back_track_current in parent_map:
+                next_back_track_current, d  = parent_map[back_track_current]
+                directions.append(d)
+                back_track_current = next_back_track_current
+            directions.reverse()
+            return directions
+        for neighbor in problem.getSuccessors(current):
+            coordinate, direction, cost = neighbor
+            if coordinate in visited:
+                continue
+            parent_map[coordinate] = (current, direction)
+            stack.append(coordinate)
+            continue
+    raise Exception('Could not find path')
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
