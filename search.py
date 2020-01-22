@@ -146,10 +146,10 @@ def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     parent_map, explored, start = {}, set(), problem.startState
-    priority_queue = [(0 + heuristic(start, problem), start)]
+    priority_queue = [(0, 0, start)]
     total_nodes_expanded = 0
     while priority_queue:
-        frontier_cost, min_frontier = heapq.heappop(priority_queue)
+        _, frontier_cost, min_frontier = heapq.heappop(priority_queue)
         if min_frontier in explored:
             continue
         explored.add(min_frontier)
@@ -160,11 +160,12 @@ def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
             return directions
         for neighbor in problem.getSuccessors(min_frontier):
             coordinate, direction, cost = neighbor
-            total_cost = frontier_cost + cost + heuristic(coordinate, problem)
+            total_cost = frontier_cost + cost
+            total_cost_with_heuristic = total_cost + heuristic(coordinate, problem)
             if coordinate not in explored:
                 # Only update the parent_map if cost is less
                 node_info = (min_frontier, direction, total_cost)
-                heapq.heappush(priority_queue, (total_cost, coordinate))
+                heapq.heappush(priority_queue, (total_cost_with_heuristic, total_cost, coordinate))
                 if coordinate not in parent_map:
                     parent_map[coordinate] = node_info
                 else:
