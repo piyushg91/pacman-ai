@@ -108,13 +108,16 @@ def uniformCostSearch(problem: PositionSearchProblem):
     "*** YOUR CODE HERE ***"
     parent_map, explored, start = {}, set(), problem.startState
     priority_queue = [(0, start)]
+    total_nodes_expanded = 0
     while priority_queue:
         frontier_cost, min_frontier = heapq.heappop(priority_queue)
         if min_frontier in explored:
             continue
         explored.add(min_frontier)
+        total_nodes_expanded += 1
         if problem.isGoalState(min_frontier):
             directions = get_path_from_start_to_goal(parent_map, min_frontier)
+            print('The total number of nodes expanded was ' + str(total_nodes_expanded))
             return directions
         for neighbor in problem.getSuccessors(min_frontier):
             coordinate, direction, cost = neighbor
@@ -139,10 +142,36 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    raise NotImplementedError
+    parent_map, explored, start = {}, set(), problem.startState
+    priority_queue = [(0 + heuristic(start, problem), start)]
+    total_nodes_expanded = 0
+    while priority_queue:
+        frontier_cost, min_frontier = heapq.heappop(priority_queue)
+        if min_frontier in explored:
+            continue
+        explored.add(min_frontier)
+        total_nodes_expanded += 1
+        if problem.isGoalState(min_frontier):
+            directions = get_path_from_start_to_goal(parent_map, min_frontier)
+            print('The total number of nodes expanded was ' + str(total_nodes_expanded))
+            return directions
+        for neighbor in problem.getSuccessors(min_frontier):
+            coordinate, direction, cost = neighbor
+            total_cost = frontier_cost + cost + heuristic(coordinate, problem)
+            if coordinate not in explored:
+                # Only update the parent_map if cost is less
+                node_info = (min_frontier, direction, total_cost)
+                heapq.heappush(priority_queue, (total_cost, coordinate))
+                if coordinate not in parent_map:
+                    parent_map[coordinate] = node_info
+                else:
+                    existing_total_cost = parent_map[coordinate][2]
+                    if total_cost < existing_total_cost:
+                        parent_map[coordinate] = node_info
+    raise Exception('Could not find path')
 
 
 # Abbreviations
