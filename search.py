@@ -64,7 +64,7 @@ def depthFirstSearch(problem: PositionSearchProblem):
             coordinate, direction, cost = neighbor
             if coordinate in visited:
                 continue
-            parent_map[coordinate] = (current, direction)
+            parent_map[coordinate] = (current, direction, cost)
             stack.append(coordinate)
             continue
     raise Exception('Could not find path')
@@ -95,10 +95,10 @@ def breadthFirstSearch(problem: PositionSearchProblem):
             directions = get_path_from_start_to_goal(parent_map, next_node)
             return directions
         for neighbor in problem.getSuccessors(next_node):
-            coordinate, direction, _ = neighbor
+            coordinate, direction, cost = neighbor
             if coordinate in visited:
                 continue
-            parent_map[coordinate] = (next_node, direction)
+            parent_map[coordinate] = (next_node, direction, cost)
             q.put(coordinate)
     raise Exception('Could not find path')
 
