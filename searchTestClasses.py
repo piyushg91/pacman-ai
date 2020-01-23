@@ -19,7 +19,7 @@ import textwrap
 # import project specific code
 import layout
 import pacman
-from search import SearchProblem
+from search_problem import SearchProblem
 
 # helper function for printing solutions in solution files
 def wrap_solution(solution):

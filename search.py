@@ -58,7 +58,7 @@ def depthFirstSearch(problem: PositionSearchProblem):
             continue
         visited.add(current)
         if problem.isGoalState(current):
-            directions = get_path_from_start_to_goal(parent_map, problem.goal)
+            directions = get_path_from_start_to_goal(parent_map, current)
             return directions
         for neighbor in problem.getSuccessors(current):
             coordinate, direction, cost = neighbor
@@ -106,7 +106,7 @@ def breadthFirstSearch(problem: PositionSearchProblem):
 def uniformCostSearch(problem: PositionSearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    parent_map, explored, start = {}, set(), problem.startState
+    parent_map, explored, start = {}, set(), problem.getStartState()
     priority_queue = [(0, start)]
     total_nodes_expanded = 0
     while priority_queue:
