@@ -88,7 +88,7 @@ def breadthFirstSearch(problem: PositionSearchProblem):
     start = problem.getStartState()
     parent_map, visited = {}, set()
     q.put(start)
-    while q:
+    while not q.empty():
         next_node = q.get()
         visited.add(next_node)
         if problem.isGoalState(next_node):
@@ -145,7 +145,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    parent_map, explored, start = {}, set(), problem.startState
+    parent_map, explored, start = {}, set(), problem.getStartState()
     priority_queue = [(0, 0, start)]
     total_nodes_expanded = 0
     while priority_queue:
