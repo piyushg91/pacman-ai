@@ -40,6 +40,7 @@ from game import Actions
 from position_search_problem import PositionSearchProblem
 from search_problem import SearchProblem
 import util
+import math
 import time
 import search
 
@@ -285,10 +286,14 @@ def cornersHeuristic(state, problem):
     position = state[0]
     corners_available = state[1]
     total_cost = 0
+    costs = []
+    if not corners_available:
+        return total_cost
     for corner in corners_available:
         cost = abs(position[0] - corner[0]) + abs(position[1] - corner[1])
+        costs.append(cost)
         total_cost += cost
-    return total_cost
+    return max(costs)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -352,7 +357,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
-def foodHeuristic(state, problem):
+def foodHeuristic(state, problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
 
@@ -382,7 +387,26 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    food_pos_list = foodGrid.asList()
+    costs = []
+    for food_pos in food_pos_list:
+        dx = abs(food_pos[0] - position[0])
+        dy = abs(food_pos[1] - position[1])
+        costs.append(math.sqrt(dx**2 + dy**2))
+        # cost = abs(food_pos[0] - position[0]) + abs(food_pos[1] - position[1])
+        # costs.append(cost)
+    costs.sort()
+    costs.reverse()
+    if not costs:
+        return 0
+    elif len(costs) == 1 or len(costs) == 2:
+        return costs[0]
+    else:
+        return (costs[0] + costs[1] + costs[2])/3
+
+    # Count the number of food to the left and right
+    # Count the number of food to the top and bottom
+    # Subtract and set as cost
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

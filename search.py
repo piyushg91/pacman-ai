@@ -58,15 +58,15 @@ def depthFirstSearch(problem: PositionSearchProblem):
             continue
         visited.add(current)
         if problem.isGoalState(current):
-            directions = get_path_from_start_to_goal(parent_map, current)
+            directions = get_path_from_start_to_goal(parent_map, coordinate)
             return directions
-        for neighbor in problem.getSuccessors(current):
+        successors = problem.getSuccessors(current)
+        for neighbor in successors:
             coordinate, direction, cost = neighbor
             if coordinate in visited:
                 continue
             parent_map[coordinate] = (current, direction, cost)
             stack.append(coordinate)
-            continue
     raise Exception('Could not find path')
 
 def get_path_from_start_to_goal(parent_map, goal):
@@ -107,10 +107,11 @@ def uniformCostSearch(problem: PositionSearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     parent_map, explored, start = {}, set(), problem.getStartState()
-    priority_queue = [(0, start)]
+    count = 0
+    priority_queue = [(0, count, start)]
     total_nodes_expanded = 0
     while priority_queue:
-        frontier_cost, min_frontier = heapq.heappop(priority_queue)
+        frontier_cost, _, min_frontier = heapq.heappop(priority_queue)
         if min_frontier in explored:
             continue
         explored.add(min_frontier)
@@ -125,7 +126,8 @@ def uniformCostSearch(problem: PositionSearchProblem):
             if coordinate not in explored:
                 # Only update the parent_map if cost is less
                 node_info = (min_frontier, direction, total_cost)
-                heapq.heappush(priority_queue, (total_cost, coordinate))
+                count += 1
+                heapq.heappush(priority_queue, (total_cost, count, coordinate))
                 if coordinate not in parent_map:
                     parent_map[coordinate] = node_info
                 else:
@@ -146,10 +148,12 @@ def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     parent_map, explored, start = {}, set(), problem.getStartState()
-    priority_queue = [(0, 0, start)]
+    # full_cost, count, frontier_cost, frontier
+    priority_queue = [(0, 0, 0, start)]
+    count = 0
     total_nodes_expanded = 0
     while priority_queue:
-        _, frontier_cost, min_frontier = heapq.heappop(priority_queue)
+        _, _, frontier_cost, min_frontier = heapq.heappop(priority_queue)
         if min_frontier in explored:
             continue
         explored.add(min_frontier)
@@ -165,7 +169,8 @@ def aStarSearch(problem: PositionSearchProblem, heuristic=nullHeuristic):
             if coordinate not in explored:
                 # Only update the parent_map if cost is less
                 node_info = (min_frontier, direction, total_cost)
-                heapq.heappush(priority_queue, (total_cost_with_heuristic, total_cost, coordinate))
+                count += 1
+                heapq.heappush(priority_queue, (total_cost_with_heuristic, count, total_cost, coordinate))
                 if coordinate not in parent_map:
                     parent_map[coordinate] = node_info
                 else:

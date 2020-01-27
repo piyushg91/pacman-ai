@@ -21,6 +21,9 @@ import re
 import sys
 import projectParams
 import random
+import testParser
+import testClasses
+
 random.seed(0)
 try: 
     from pacman import GameState
@@ -249,8 +252,6 @@ def evaluate(generateSolutions, testRoot, moduleDict, exceptionMap=ERROR_HINT_MA
             printTestCase=False, questionToGrade=None, display=None):
     # imports of testbench code.  note that the testClasses import must follow
     # the import of student code due to dependencies
-    import testParser
-    import testClasses
     for module in moduleDict:
         setattr(sys.modules[__name__], module, moduleDict[module])
 
