@@ -58,7 +58,7 @@ def depthFirstSearch(problem: PositionSearchProblem):
             continue
         visited.add(current)
         if problem.isGoalState(current):
-            directions = get_path_from_start_to_goal(parent_map, coordinate)
+            directions = get_path_from_start_to_goal(parent_map, current)
             return directions
         successors = problem.getSuccessors(current)
         for neighbor in successors:
@@ -87,19 +87,23 @@ def breadthFirstSearch(problem: PositionSearchProblem):
     q = Queue()
     start = problem.getStartState()
     parent_map, visited = {}, set()
-    q.put(start)
+    q.put((start, 0))
     while not q.empty():
-        next_node = q.get()
+        next_node, node_cost = q.get()
+        if next_node in visited:
+            continue
         visited.add(next_node)
         if problem.isGoalState(next_node):
             directions = get_path_from_start_to_goal(parent_map, next_node)
             return directions
         for neighbor in problem.getSuccessors(next_node):
             coordinate, direction, cost = neighbor
+            cost += node_cost
             if coordinate in visited:
                 continue
-            parent_map[coordinate] = (next_node, direction, cost)
-            q.put(coordinate)
+            if coordinate not in parent_map or parent_map[coordinate][2] > cost:
+                parent_map[coordinate] = (next_node, direction, cost)
+            q.put((coordinate, cost))
     raise Exception('Could not find path')
 
 
