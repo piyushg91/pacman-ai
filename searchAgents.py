@@ -38,6 +38,7 @@ from game import Directions
 from game import Agent
 from game import Actions
 from position_search_problem import PositionSearchProblem
+from queue import Queue
 from search_problem import SearchProblem
 import util
 import math
@@ -441,7 +442,27 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Copy and pasta from BFS
+        q = Queue()
+        start = startPosition
+        parent_map, visited = {}, set()
+        q.put((start, 0))
+        while not q.empty():
+            next_node, node_cost = q.get()
+            if next_node in visited:
+                continue
+            visited.add(next_node)
+            if problem.isGoalState(next_node):
+                directions = util.get_path_from_start_to_goal(parent_map, next_node)
+                return directions
+            for neighbor in problem.getSuccessors(next_node):
+                coordinate, direction, cost = neighbor
+                cost += node_cost
+                if coordinate in visited:
+                    continue
+                if coordinate not in parent_map or parent_map[coordinate][2] > cost:
+                    parent_map[coordinate] = (next_node, direction, cost)
+                q.put((coordinate, cost))
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -476,8 +497,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (x,y) in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
     """

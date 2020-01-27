@@ -21,6 +21,7 @@ import heapq
 from game import Directions
 from position_search_problem import PositionSearchProblem
 from queue import Queue
+from util import get_path_from_start_to_goal
 
 
 
@@ -68,17 +69,6 @@ def depthFirstSearch(problem: PositionSearchProblem):
             parent_map[coordinate] = (current, direction, cost)
             stack.append(coordinate)
     raise Exception('Could not find path')
-
-def get_path_from_start_to_goal(parent_map, goal):
-    directions = []
-    back_track_current = goal
-    while back_track_current in parent_map:
-        next_back_track_current, d, _ = parent_map[back_track_current]
-        directions.append(d)
-        back_track_current = next_back_track_current
-    directions.reverse()
-    print('Length of direction ' + str(len(directions)))
-    return directions
 
 
 def breadthFirstSearch(problem: PositionSearchProblem):
