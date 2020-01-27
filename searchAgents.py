@@ -285,15 +285,19 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     position = state[0]
     corners_available = state[1]
+    if position in corners_available:
+        return 0
     total_cost = 0
     costs = []
     if not corners_available:
         return total_cost
     for corner in corners_available:
-        cost = abs(position[0] - corner[0]) + abs(position[1] - corner[1])
+        cost = math.sqrt(abs(position[0] - corner[0])**2 + abs(position[1] - corner[1])**2)
         costs.append(cost)
         total_cost += cost
-    return max(costs)
+    max_cost = max(costs)
+    avg_cost = sum(costs)/len(costs)
+    return min(costs)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
